@@ -1,21 +1,13 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(tidyverse)
 library(quantmod)
 library(shinythemes)
+library(xts)
 
-# Define UI for application that draws a histogram
 ui <- fluidPage(
    
-   # Application title
+  theme = shinytheme("cosmo"),
+
    titlePanel("Federal Reserve Economic Data"),
    
    # Sidebar with a slider input for number of bins 
@@ -23,28 +15,41 @@ ui <- fluidPage(
       sidebarPanel(
         
          selectInput("stat",
-                     "Select Economic Data to View",
-                     c("Fed Funds Rate" = "FEDFUNDS",
+                     "Select Economic Data to View:",
+                     c("Real GDP" = "GDPC1",
+                       "Consumer Price Index" ="CPIAUCSL",
                        "Unemployment Rate"  = "UNRATE",
-                       "ND000334Q",
-                       "CPIAUCSL",
-                       "M1V",
-                       "DGS2",
-                       "TEDRATE",
-                       "INTDSRUSM193N"),
-                     selected = "UNRATE"),
+                       "Initial Claims" = "ICSA",
+                       "Total Nonfarm Payroll" = "PAYNSA",
+                       "M1 Money Stock" = "M1",
+                       "M2 Money Stock" = "M2",
+                       "Velocity of M1 Money Stock" = "M1V",
+                       "Velocity of M2 Money Stock" = "M2V",
+                       "TED Spread" = "TEDRATE",
+                       "Fed Funds Rate" = "FEDFUNDS",
+                       "2-Year US Treasury Rate" = "DGS2",
+                       "Fed Discount Rate" = "INTDSRUSM193N",
+                       "Income Tax - Highest Bracket" = "IITTRHB",
+                       "Income Tax - Lowest Bracket" = "IITTRLB"),
+                     selected = "GDPC1"),
+         
+         selectInput("plot",
+                     "Plot Type:",
+                     c("Line Graph" = "line",
+                       "Scatterplot"  = "point",
+                       "Area Chart" ="area"),
+                     selected = "point"),
          
          sliderInput("year",
                      "Select Years to View:",
-                     min = 1900,
+                     min = 1960,
                      max = 2020,
                      value = c(1980, 2020),
                      sep = "")
       ),
       
       mainPanel(
-         plotOutput("distPlot"),
-         textOutput("testText")
+         plotOutput("dataPlot")
       )
    )
 )
@@ -53,14 +58,16 @@ ui <- fluidPage(
 
 server <- function(input, output) {
    
-   output$distPlot <- renderPlot({
+   output$dataPlot <- renderPlot({
+     
      my_data <- getSymbols(input$stat, src = "FRED", auto.assign = FALSE)
-     autoplot(my_data[sprintf("%i/%i", input$year[1], input$year[2])])
+     
+     my_data[sprintf("%i/%i", input$year[1], input$year[2])] %>%
+     autoplot(geom = input$plot) +
+       xlab("Year")
+       
    })
-   
-   output$testText <- renderText({
-     print(input$stat)
-   })
+
 }
 
 # Run the application 
