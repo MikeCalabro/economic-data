@@ -6,11 +6,10 @@ library(xts)
 
 ui <- fluidPage(
    
-  theme = shinytheme("cosmo"),
+   theme = shinytheme("cosmo"),
 
    titlePanel("Federal Reserve Economic Data"),
-   
-   # Sidebar with a slider input for number of bins 
+
    sidebarLayout(
       sidebarPanel(
         
@@ -40,6 +39,12 @@ ui <- fluidPage(
                        "Area Chart" ="area"),
                      selected = "point"),
          
+         selectInput("side",
+                     "Select the Side of the Y-Axis:",
+                     c("Right" = "right",
+                       "Left" ="left"),
+                     selected = "left"),
+         
          sliderInput("year",
                      "Select Years to View:",
                      min = 1960,
@@ -64,7 +69,8 @@ server <- function(input, output) {
      
      my_data[sprintf("%i/%i", input$year[1], input$year[2])] %>%
      autoplot(geom = input$plot) +
-       xlab("Year")
+       xlab("Year") +
+       scale_y_continuous(n.breaks = 20, position = input$side)
        
    })
 
