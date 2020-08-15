@@ -30,7 +30,7 @@ ui <- fluidPage(
                        "Fed Discount Rate" = "INTDSRUSM193N",
                        "Income Tax - Highest Bracket" = "IITTRHB",
                        "Income Tax - Lowest Bracket" = "IITTRLB"),
-                     selected = "GDPC1"),
+                     selected = "FEDFUNDS"),
          
          selectInput("plot",
                      "Plot Type:",
@@ -67,8 +67,7 @@ server <- function(input, output) {
      
      my_data <- getSymbols(input$stat, src = "FRED", auto.assign = FALSE)
      
-     my_data[sprintf("%i/%i", input$year[1], input$year[2])] %>%
-     autoplot(geom = input$plot) +
+     autoplot(my_data[sprintf("%i/%i", input$year[1], input$year[2])], geom = input$plot) +
        xlab("Year") +
        scale_y_continuous(n.breaks = 20, position = input$side)
        
