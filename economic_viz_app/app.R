@@ -39,18 +39,28 @@ ui <- fluidPage(
                        "Area Chart" ="area"),
                      selected = "point"),
          
-         selectInput("side",
+         selectInput("position",
                      "Select the Side of the Y-Axis:",
                      c("Right" = "right",
                        "Left" ="left"),
                      selected = "left"),
+         
+         sliderInput("breaks",
+                     "Select Number of Y-axis ticks",
+                     min = 5,
+                     max = 40,
+                     value = 20),
          
          sliderInput("year",
                      "Select Years to View:",
                      min = 1960,
                      max = 2020,
                      value = c(1980, 2020),
-                     sep = "")
+                     sep = ""),
+         
+         br(),
+         h4("Shiny App Created By:"),
+         h4("Michael Calabro")
       ),
       
       mainPanel(
@@ -69,7 +79,7 @@ server <- function(input, output) {
      
      autoplot(my_data[sprintf("%i/%i", input$year[1], input$year[2])], geom = input$plot) +
        xlab("Year") +
-       scale_y_continuous(n.breaks = 20, position = input$side)
+       scale_y_continuous(n.breaks = input$breaks, position = input$position)
        
    })
 
