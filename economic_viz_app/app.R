@@ -6,7 +6,7 @@ library(xts)
 
 ui <- fluidPage(
    
-   theme = shinytheme("cosmo"),
+   theme = shinytheme("readable"),
 
    titlePanel("Federal Reserve Economic Data"),
 
@@ -37,14 +37,14 @@ ui <- fluidPage(
                        "10-Year Rate Minus 2-Year Rate" = "T10Y2Y",
                        "Income Tax - Highest Bracket" = "IITTRHB",
                        "Income Tax - Lowest Bracket" = "IITTRLB"),
-                     selected = "FEDFUNDS"),
+                     selected = "UNRATE"),
          
          selectInput("plot",
                      "Select Plot Type:",
                      c("Line Graph" = "line",
                        "Scatterplot"  = "point",
                        "Area Chart" ="area"),
-                     selected = "point"),
+                     selected = "line"),
          
          selectInput("position",
                      "Select the Side of the Y-Axis:",
@@ -56,28 +56,30 @@ ui <- fluidPage(
                      "Select Number of Y-axis ticks",
                      min = 5,
                      max = 40,
-                     value = 20),
+                     value = 20,
+                     step = 5),
          
          sliderInput("year",
                      "Select Years to View:",
                      min = 1940,
                      max = 2020,
-                     value = c(1980, 2020),
+                     value = c(2005, 2020),
                      sep = ""),
          
          checkboxInput("trendline",
                        "Show Trendline",
                        value = FALSE),
          
-         br(),
          h4("Shiny App Created By:"),
          h4("Michael Calabro"),
          br(),
-         a("Data sourced from The Federal Reserve of St. Louis Website", href="https://fred.stlouisfed.org/")
+         a("Data sourced from Federal Reserve of St. Louis Website", href="https://fred.stlouisfed.org/")
       ),
       
       mainPanel(
-         plotOutput("dataPlot")
+         plotOutput("dataPlot"),
+         br(),
+         textOutput("description")
       )
    )
 )
@@ -93,11 +95,15 @@ server <- function(input, output) {
      autoplot(my_data[sprintf("%i/%i", input$year[1], input$year[2])], geom = input$plot) +
        xlab("Year") +
        ylab("") +
+       ggtitle(sprintf("Select Economic Data From %i - %i", input$year[1], input$year[2])) +
        scale_y_continuous(n.breaks = input$breaks, position = input$position) +
        if(input$trendline){
          geom_smooth(se = FALSE)
-       }
-       
+       } 
+   })
+   
+   output$description <- renderText({
+     print("Describing the Economic Variable")
    })
 
 }
