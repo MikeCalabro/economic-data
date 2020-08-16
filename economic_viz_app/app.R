@@ -19,21 +19,28 @@ ui <- fluidPage(
                        "Consumer Price Index" ="CPIAUCSL",
                        "Unemployment Rate"  = "UNRATE",
                        "Initial Claims" = "ICSA",
-                       "Total Nonfarm Payroll" = "PAYNSA",
+                       "Total Nonfarm Payroll" = "PAYEMS",
                        "M1 Money Stock" = "M1",
                        "M2 Money Stock" = "M2",
                        "Velocity of M1 Money Stock" = "M1V",
                        "Velocity of M2 Money Stock" = "M2V",
                        "TED Spread" = "TEDRATE",
                        "Fed Funds Rate" = "FEDFUNDS",
-                       "2-Year US Treasury Rate" = "DGS2",
                        "Fed Discount Rate" = "INTDSRUSM193N",
+                       "3-Month US Treasury Rate" = "DTB3",
+                       "1-Year US Treasury Rate" = "DGS1",
+                       "2-Year US Treasury Rate" = "DGS2",
+                       "5-Year US Treasury Rate" = "DGS5",
+                       "10-Year US Treasury Rate" = "DGS10",
+                       "20-Year US Treasury Rate" = "DGS20",
+                       "30-Year US Treasury Rate" = "DGS30",
+                       "10-Year Rate Minus 2-Year Rate" = "T10Y2Y",
                        "Income Tax - Highest Bracket" = "IITTRHB",
                        "Income Tax - Lowest Bracket" = "IITTRLB"),
                      selected = "FEDFUNDS"),
          
          selectInput("plot",
-                     "Plot Type:",
+                     "Select Plot Type:",
                      c("Line Graph" = "line",
                        "Scatterplot"  = "point",
                        "Area Chart" ="area"),
@@ -53,14 +60,20 @@ ui <- fluidPage(
          
          sliderInput("year",
                      "Select Years to View:",
-                     min = 1960,
+                     min = 1940,
                      max = 2020,
                      value = c(1980, 2020),
                      sep = ""),
          
+         checkboxInput("trendline",
+                       "Show Trendline",
+                       value = FALSE),
+         
          br(),
          h4("Shiny App Created By:"),
-         h4("Michael Calabro")
+         h4("Michael Calabro"),
+         br(),
+         a("Data sourced from The Federal Reserve of St. Louis Website", href="https://fred.stlouisfed.org/")
       ),
       
       mainPanel(
@@ -79,7 +92,11 @@ server <- function(input, output) {
      
      autoplot(my_data[sprintf("%i/%i", input$year[1], input$year[2])], geom = input$plot) +
        xlab("Year") +
-       scale_y_continuous(n.breaks = input$breaks, position = input$position)
+       ylab("") +
+       scale_y_continuous(n.breaks = input$breaks, position = input$position) +
+       if(input$trendline){
+         geom_smooth(se = FALSE)
+       }
        
    })
 
