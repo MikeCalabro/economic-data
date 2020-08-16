@@ -1,0 +1,12 @@
+name: economic_viz_app
+title: economic_viz_app
+username:
+account: calabs97
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2675378
+bundleId: 3522653
+url: https://calabs97.shinyapps.io/economic_viz_app/
+when: 1597606772.99666
+asMultiple: FALSE
+asStatic: FALSE
